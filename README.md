@@ -155,8 +155,8 @@ Email: software@aldoforte.it
   
 ## Ringraziamenti  
 [Gin Web Framework](https://gin-gonic.com)  
-Swaggo  
-Go Crypto Package  
+[Swaggo](https://github.com/swaggo/swag)  
+ 
  
 Se questo progetto ti è stato utile per testing o apprendimento, considera di lasciare una stella!  
 
