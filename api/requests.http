@@ -1,0 +1,450 @@
+###############################################################################
+# Certificate API - Manual Testing
+###############################################################################
+# Base URL: http://localhost:8080
+# Documentation: http://localhost:8080/swagger/index.html
+#
+# Usage:
+# 1. Start the server: go run main.go
+# 2. Click the green arrow (▶) next to each request
+# 3. Variables are automatically saved and reused
+###############################################################################
+
+### Variables
+@baseUrl = http://localhost:8080
+@apiVersion = v1
+
+###############################################################################
+# HEALTH & INFO
+###############################################################################
+
+### Health Check
+GET {{baseUrl}}/health
+
+### API Root Info
+GET {{baseUrl}}/
+
+
+###############################################################################
+# 1. CERTIFICATE AUTHORITY (CA)
+###############################################################################
+
+### 1.1 Create Certificate Authority
+# Creates a self-signed root CA for signing certificates
+# This should be done FIRST before creating any certificates
+POST {{baseUrl}}/api/{{apiVersion}}/ca/create
+Content-Type: application/json
+
+{
+  "common_name": "NetEye CA",
+  "organization": "neteye",
+  "country": "IT",
+  "valid_days": 3650,
+  "key_size": 4096
+}
+
+### 1.2 Get CA Information
+# Retrieve information about the current CA
+GET {{baseUrl}}/api/{{apiVersion}}/ca/info
+
+### 1.3 Download CA Certificate (PEM)
+# Download the CA certificate without private key
+# Use this certificate to verify server/client certificates
+GET {{baseUrl}}/api/{{apiVersion}}/ca/certificate
+
+
+###############################################################################
+# 2. SERVER CERTIFICATES
+###############################################################################
+
+### 2.1 Create Server Certificate - MQTT Broker
+# Certificate for TLS server (MQTT broker, web server, etc.)
+# CN must match the server's DNS name
+POST {{baseUrl}}/api/{{apiVersion}}/cert/server
+Content-Type: application/json
+
+{
+  "common_name": "mqtt.aldoforte.it",
+  "organization": "Aldo Forte",
+  "country": "IT",
+  "valid_days": 365,
+  "sans": [
+    "mqtt.aldoforte.it",
+    "aldoforte.it",
+    "*.aldoforte.it"
+  ]
+}
+
+> {%
+    client.global.set("mqttServerId", response.body.id);
+    client.log("MQTT Server cert ID: " + response.body.id);
+%}
+
+### 2.2 Create Server Certificate - Web Server
+POST {{baseUrl}}/api/{{apiVersion}}/cert/server
+Content-Type: application/json
+
+{
+  "common_name": "www.aldoforte.it",
+  "organization": "Aldo Forte",
+  "country": "IT",
+  "valid_days": 365,
+  "sans": [
+    "www.aldoforte.it",
+    "aldoforte.it"
+  ]
+}
+
+> {%
+    client.global.set("webServerId", response.body.id);
+    client.log("Web Server cert ID: " + response.body.id);
+%}
+
+### 2.3 Create Server Certificate - API Server
+POST {{baseUrl}}/api/{{apiVersion}}/cert/server
+Content-Type: application/json
+
+{
+  "common_name": "api.aldoforte.it",
+  "organization": "Aldo Forte",
+  "country": "IT",
+  "valid_days": 365,
+  "sans": [
+    "api.aldoforte.it"
+  ]
+}
+
+> {%
+    client.global.set("apiServerId", response.body.id);
+    client.log("API Server cert ID: " + response.body.id);
+%}
+
+### 2.4 Get Server Certificate by ID
+# Retrieve a specific server certificate
+GET {{baseUrl}}/api/{{apiVersion}}/cert/server/{{mqttServerId}}
+
+
+###############################################################################
+# 3. CLIENT CERTIFICATES (mTLS)
+###############################################################################
+
+### 3.1 Create Client Certificate - IoT Temperature Sensor
+# Certificate for mTLS client authentication
+POST {{baseUrl}}/api/{{apiVersion}}/cert/client
+Content-Type: application/json
+
+{
+  "common_name": "sensor-temperatura-sala-a",
+  "organization": "Aldo Forte",
+  "country": "IT",
+  "valid_days": 1095
+}
+
+> {%
+    client.global.set("sensorClientId", response.body.id);
+    client.log("Sensor Client cert ID: " + response.body.id);
+%}
+
+### 3.2 Create Client Certificate - IoT Humidity Sensor
+POST {{baseUrl}}/api/{{apiVersion}}/cert/client
+Content-Type: application/json
+
+{
+  "common_name": "sensor-umidita-sala-b",
+  "organization": "Aldo Forte",
+  "country": "IT",
+  "valid_days": 1095
+}
+
+> {%
+    client.global.set("humiditySensorId", response.body.id);
+    client.log("Humidity Sensor cert ID: " + response.body.id);
+%}
+
+### 3.3 Create Client Certificate - Mobile App User
+POST {{baseUrl}}/api/{{apiVersion}}/cert/client
+Content-Type: application/json
+
+{
+  "common_name": "mobile-app-user-aldo",
+  "organization": "Aldo Forte",
+  "country": "IT",
+  "valid_days": 365
+}
+
+> {%
+    client.global.set("mobileClientId", response.body.id);
+    client.log("Mobile App cert ID: " + response.body.id);
+%}
+
+### 3.4 Create Client Certificate - Desktop Application
+POST {{baseUrl}}/api/{{apiVersion}}/cert/client
+Content-Type: application/json
+
+{
+  "common_name": "desktop-app-workstation-01",
+  "organization": "Aldo Forte",
+  "country": "IT",
+  "valid_days": 730
+}
+
+> {%
+    client.global.set("desktopClientId", response.body.id);
+    client.log("Desktop App cert ID: " + response.body.id);
+%}
+
+### 3.5 Get Client Certificate by ID
+# Retrieve a specific client certificate
+GET {{baseUrl}}/api/{{apiVersion}}/cert/client/{{sensorClientId}}
+
+### 3.6 Download Client Certificate Package
+# Download ZIP package with certificate, key and CA certificate
+GET {{baseUrl}}/api/{{apiVersion}}/cert/client/{{sensorClientId}}/package
+
+
+###############################################################################
+# 4. CERTIFICATE MANAGEMENT
+###############################################################################
+
+### 4.1 List All Certificates
+# Get a list of all generated certificates (server + client)
+GET {{baseUrl}}/api/{{apiVersion}}/certs
+
+### 4.2 Revoke Certificate (Not Implemented)
+# Revoke a certificate by ID
+DELETE {{baseUrl}}/api/{{apiVersion}}/cert/revoke/{{sensorClientId}}
+
+
+###############################################################################
+# 5. ERROR CASES & TESTING
+###############################################################################
+
+### 5.1 Try to create certificate WITHOUT CA (should fail with 400)
+POST {{baseUrl}}/api/{{apiVersion}}/cert/server
+Content-Type: application/json
+
+{
+  "common_name": "test.example.com",
+  "organization": "Test Inc",
+  "country": "IT",
+  "valid_days": 365
+}
+
+### 5.2 Invalid country code - too long (should fail with 400)
+POST {{baseUrl}}/api/{{apiVersion}}/ca/create
+Content-Type: application/json
+
+{
+  "common_name": "Invalid CA",
+  "organization": "Test Org",
+  "country": "ITALY",
+  "valid_days": 3650
+}
+
+### 5.3 Invalid country code - lowercase (should fail with 400)
+POST {{baseUrl}}/api/{{apiVersion}}/ca/create
+Content-Type: application/json
+
+{
+  "common_name": "Invalid CA",
+  "organization": "Test Org",
+  "country": "it",
+  "valid_days": 3650
+}
+
+### 5.4 Missing required field - common_name (should fail with 400)
+POST {{baseUrl}}/api/{{apiVersion}}/cert/server
+Content-Type: application/json
+
+{
+  "organization": "Test Org",
+  "country": "IT",
+  "valid_days": 365
+}
+
+### 5.5 Missing required field - organization (should fail with 400)
+POST {{baseUrl}}/api/{{apiVersion}}/cert/client
+Content-Type: application/json
+
+{
+  "common_name": "test-device",
+  "country": "IT",
+  "valid_days": 365
+}
+
+### 5.6 Get non-existent certificate (should fail with 404)
+GET {{baseUrl}}/api/{{apiVersion}}/cert/server/00000000-0000-0000-0000-000000000000
+
+### 5.7 Invalid key size - too small (should work but not recommended)
+POST {{baseUrl}}/api/{{apiVersion}}/ca/create
+Content-Type: application/json
+
+{
+  "common_name": "Weak CA",
+  "organization": "Test Org",
+  "country": "IT",
+  "valid_days": 365,
+  "key_size": 1024
+}
+
+
+###############################################################################
+# 6. PRODUCTION SCENARIOS
+###############################################################################
+
+### 6.1 Full mTLS Setup - MQTT Broker + IoT Device
+# Step 1: Create CA (run once)
+POST {{baseUrl}}/api/{{apiVersion}}/ca/create
+Content-Type: application/json
+
+{
+  "common_name": "Production Root CA 2024",
+  "organization": "Aldo Forte",
+  "country": "IT",
+  "valid_days": 3650,
+  "key_size": 4096
+}
+
+###
+# Step 2: Create MQTT Broker Certificate
+POST {{baseUrl}}/api/{{apiVersion}}/cert/server
+Content-Type: application/json
+
+{
+  "common_name": "mqtt.production.aldoforte.it",
+  "organization": "Aldo Forte",
+  "country": "IT",
+  "valid_days": 365,
+  "sans": [
+    "mqtt.production.aldoforte.it",
+    "mqtt.aldoforte.it"
+  ]
+}
+
+> {%
+    client.global.set("prodMqttServerId", response.body.id);
+%}
+
+###
+# Step 3: Create IoT Device Certificate
+POST {{baseUrl}}/api/{{apiVersion}}/cert/client
+Content-Type: application/json
+
+{
+  "common_name": "iot-device-factory-001",
+  "organization": "Aldo Forte",
+  "country": "IT",
+  "valid_days": 1095
+}
+
+> {%
+    client.global.set("prodIotClientId", response.body.id);
+%}
+
+###
+# Step 4: Download CA Certificate for distribution
+GET {{baseUrl}}/api/{{apiVersion}}/ca/certificate
+
+###
+# Step 5: Get Server Certificate for MQTT Broker
+GET {{baseUrl}}/api/{{apiVersion}}/cert/server/{{prodMqttServerId}}
+
+###
+# Step 6: Get Client Certificate for IoT Device
+GET {{baseUrl}}/api/{{apiVersion}}/cert/client/{{prodIotClientId}}
+
+
+###############################################################################
+# 7. MULTIPLE ENVIRONMENTS
+###############################################################################
+
+### 7.1 Development Environment - Create CA
+POST {{baseUrl}}/api/{{apiVersion}}/ca/create
+Content-Type: application/json
+
+{
+  "common_name": "Development CA 2024",
+  "organization": "Aldo Forte Dev",
+  "country": "IT",
+  "valid_days": 1825,
+  "key_size": 2048
+}
+
+### 7.2 Staging Environment - Create CA
+POST {{baseUrl}}/api/{{apiVersion}}/ca/create
+Content-Type: application/json
+
+{
+  "common_name": "Staging CA 2024",
+  "organization": "Aldo Forte Staging",
+  "country": "IT",
+  "valid_days": 1825,
+  "key_size": 4096
+}
+
+### 7.3 Production Environment - Create CA
+POST {{baseUrl}}/api/{{apiVersion}}/ca/create
+Content-Type: application/json
+
+{
+  "common_name": "Production CA 2024",
+  "organization": "Aldo Forte",
+  "country": "IT",
+  "valid_days": 3650,
+  "key_size": 4096
+}
+
+
+###############################################################################
+# 8. SWAGGER DOCUMENTATION
+###############################################################################
+
+### 8.1 Swagger UI (Open in browser)
+# http://localhost:8080/swagger/index.html
+
+### 8.2 Swagger JSON (OpenAPI Spec)
+GET {{baseUrl}}/swagger/doc.json
+
+### 8.3 Swagger YAML (OpenAPI Spec)
+# File available at: docs/swagger.yaml
+
+
+###############################################################################
+# NOTES
+###############################################################################
+#
+# Certificate Validity Recommendations:
+# - CA Root: 10 years (3650 days) - Rarely changed
+# - CA Intermediate: 5 years (1825 days)
+# - Server Certificates: 1 year (365 days) - Industry standard
+# - Client Certificates (IoT): 3 years (1095 days) - Harder to renew
+# - Client Certificates (Apps): 1 year (365 days) - Easier to renew
+#
+# Key Size Recommendations:
+# - CA: 4096 bits (maximum security)
+# - Server: 2048 bits (good balance)
+# - Client: 2048 bits (good balance)
+# - IoT (low power): Consider ECC instead of RSA
+#
+# Common Name (CN) Guidelines:
+# - CA: Descriptive name (e.g., "Company Root CA 2024")
+# - Server: MUST match DNS name (e.g., "mqtt.example.com")
+# - Client: Unique identifier (e.g., "device-001", "user@email.com")
+#
+# Subject Alternative Names (SANs):
+# - Always include the CN in SANs
+# - Add all domain variations (www, non-www, subdomains)
+# - Wildcards supported: *.example.com
+# - Note: *.example.com does NOT cover example.com (add both)
+#
+# Country Codes (ISO 3166-1 alpha-2):
+# - IT (Italy), US (United States), GB (United Kingdom)
+# - DE (Germany), FR (France), ES (Spain), JP (Japan)
+# - MUST be exactly 2 uppercase letters
+#
+# File Locations:
+# - CA: certs/ca/ca-cert.pem, certs/ca/ca-key.pem
+# - Server: certs/servers/{uuid}/cert.pem, key.pem
+# - Client: certs/clients/{uuid}/cert.pem, key.pem
+#
+###############################################################################

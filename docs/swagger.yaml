@@ -1,0 +1,418 @@
+basePath: /api/v1
+definitions:
+  models.CARequest:
+    properties:
+      common_name:
+        type: string
+      country:
+        type: string
+      key_size:
+        type: integer
+      organization:
+        type: string
+      valid_days:
+        type: integer
+    required:
+    - common_name
+    - country
+    - organization
+    type: object
+  models.CAResponse:
+    properties:
+      certificate:
+        type: string
+      common_name:
+        type: string
+      message:
+        type: string
+      not_after:
+        type: string
+      not_before:
+        type: string
+      private_key:
+        type: string
+      serial_number:
+        type: string
+    type: object
+  models.CertRequest:
+    properties:
+      common_name:
+        type: string
+      country:
+        type: string
+      organization:
+        type: string
+      sans:
+        items:
+          type: string
+        type: array
+      valid_days:
+        type: integer
+    required:
+    - common_name
+    - country
+    - organization
+    type: object
+  models.CertResponse:
+    properties:
+      ca_certificate:
+        type: string
+      certificate:
+        type: string
+      common_name:
+        type: string
+      download_url:
+        type: string
+      id:
+        type: string
+      not_after:
+        type: string
+      not_before:
+        type: string
+      private_key:
+        type: string
+      serial_number:
+        type: string
+      type:
+        type: string
+    type: object
+  models.ErrorResponse:
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+    type: object
+  storage.CertMetadata:
+    properties:
+      common_name:
+        type: string
+      expires_at:
+        type: string
+      id:
+        type: string
+      issued_at:
+        type: string
+      revoked:
+        type: boolean
+      serial_number:
+        type: string
+      type:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: software@aldoforte.it
+    name: Aldo Forte
+  description: |-
+    REST API for generating SSL/TLS and mTLS certificates
+    Generate Certificate Authority, server and client certificates for TLS/mTLS configurations
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  title: Certificate API
+  version: "1.0"
+paths:
+  /ca/certificate:
+    get:
+      description: Download the CA certificate in PEM format (without private key)
+      produces:
+      - application/x-pem-file
+      responses:
+        "200":
+          description: CA Certificate PEM
+          schema:
+            type: file
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Download CA certificate
+      tags:
+      - Certificate Authority
+  /ca/create:
+    post:
+      consumes:
+      - application/json
+      description: Generate a new self-signed CA to sign certificates
+      parameters:
+      - description: CA Configuration
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CARequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CAResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Create Certificate Authority
+      tags:
+      - Certificate Authority
+  /ca/info:
+    get:
+      description: Retrieve information about the current Certificate Authority
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              certificate:
+                type: string
+              common_name:
+                type: string
+              country:
+                items:
+                  type: string
+                type: array
+              is_ca:
+                type: boolean
+              not_after:
+                type: string
+              not_before:
+                type: string
+              organization:
+                items:
+                  type: string
+                type: array
+              serial_number:
+                type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get CA information
+      tags:
+      - Certificate Authority
+  /cert/client:
+    post:
+      consumes:
+      - application/json
+      description: |-
+        Generate an X.509 certificate for mTLS clients (IoT devices, applications, etc.)
+        The certificate will be signed by the configured CA
+      parameters:
+      - description: Client certificate configuration
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CertRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CertResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Create client certificate
+      tags:
+      - Client Certificates
+  /cert/client/{id}:
+    get:
+      description: Retrieve an existing client certificate by ID
+      parameters:
+      - description: Certificate ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              ca_certificate:
+                type: string
+              certificate:
+                type: string
+              id:
+                type: string
+              private_key:
+                type: string
+              type:
+                type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get client certificate
+      tags:
+      - Client Certificates
+  /cert/client/{id}/package:
+    get:
+      description: Download a ZIP package containing certificate, key and CA for the
+        client
+      parameters:
+      - description: Certificate ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Download client package
+      tags:
+      - Client Certificates
+  /cert/revoke/{id}:
+    delete:
+      description: |-
+        Revoke a certificate (not fully implemented yet)
+        In production, this should update metadata, generate CRL and implement OCSP
+      parameters:
+      - description: Certificate ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "501":
+          description: Not Implemented
+          schema:
+            properties:
+              cert_id:
+                type: string
+              message:
+                type: string
+              todo:
+                items:
+                  type: string
+                type: array
+            type: object
+      summary: Revoke certificate
+      tags:
+      - Certificates
+  /cert/server:
+    post:
+      consumes:
+      - application/json
+      description: |-
+        Generate an X.509 certificate for TLS servers (web servers, MQTT brokers, etc.)
+        The certificate will be signed by the configured CA
+      parameters:
+      - description: Server certificate configuration
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CertRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CertResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Create server certificate
+      tags:
+      - Server Certificates
+  /cert/server/{id}:
+    get:
+      description: Retrieve an existing server certificate by ID
+      parameters:
+      - description: Certificate ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              ca_certificate:
+                type: string
+              certificate:
+                type: string
+              id:
+                type: string
+              private_key:
+                type: string
+              type:
+                type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get server certificate
+      tags:
+      - Server Certificates
+  /certs:
+    get:
+      description: Get a list of all generated certificates (server and client)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              certificates:
+                items:
+                  $ref: '#/definitions/storage.CertMetadata'
+                type: array
+              total:
+                type: integer
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: List certificates
+      tags:
+      - Certificates
+schemes:
+- http
+- https
+swagger: "2.0"

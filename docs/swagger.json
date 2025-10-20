@@ -1,0 +1,623 @@
+{
+    "schemes": [
+        "http",
+        "https"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "REST API for generating SSL/TLS and mTLS certificates\nGenerate Certificate Authority, server and client certificates for TLS/mTLS configurations",
+        "title": "Certificate API",
+        "contact": {
+            "name": "Aldo Forte",
+            "email": "software@aldoforte.it"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api/v1",
+    "paths": {
+        "/ca/certificate": {
+            "get": {
+                "description": "Download the CA certificate in PEM format (without private key)",
+                "produces": [
+                    "application/x-pem-file"
+                ],
+                "tags": [
+                    "Certificate Authority"
+                ],
+                "summary": "Download CA certificate",
+                "responses": {
+                    "200": {
+                        "description": "CA Certificate PEM",
+                        "schema": {
+                            "type": "file"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/ca/create": {
+            "post": {
+                "description": "Generate a new self-signed CA to sign certificates",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Certificate Authority"
+                ],
+                "summary": "Create Certificate Authority",
+                "parameters": [
+                    {
+                        "description": "CA Configuration",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CARequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.CAResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/ca/info": {
+            "get": {
+                "description": "Retrieve information about the current Certificate Authority",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Certificate Authority"
+                ],
+                "summary": "Get CA information",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "certificate": {
+                                    "type": "string"
+                                },
+                                "common_name": {
+                                    "type": "string"
+                                },
+                                "country": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "is_ca": {
+                                    "type": "boolean"
+                                },
+                                "not_after": {
+                                    "type": "string"
+                                },
+                                "not_before": {
+                                    "type": "string"
+                                },
+                                "organization": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "serial_number": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/cert/client": {
+            "post": {
+                "description": "Generate an X.509 certificate for mTLS clients (IoT devices, applications, etc.)\nThe certificate will be signed by the configured CA",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Client Certificates"
+                ],
+                "summary": "Create client certificate",
+                "parameters": [
+                    {
+                        "description": "Client certificate configuration",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CertRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.CertResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/cert/client/{id}": {
+            "get": {
+                "description": "Retrieve an existing client certificate by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Client Certificates"
+                ],
+                "summary": "Get client certificate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Certificate ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "ca_certificate": {
+                                    "type": "string"
+                                },
+                                "certificate": {
+                                    "type": "string"
+                                },
+                                "id": {
+                                    "type": "string"
+                                },
+                                "private_key": {
+                                    "type": "string"
+                                },
+                                "type": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/cert/client/{id}/package": {
+            "get": {
+                "description": "Download a ZIP package containing certificate, key and CA for the client",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Client Certificates"
+                ],
+                "summary": "Download client package",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Certificate ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/cert/revoke/{id}": {
+            "delete": {
+                "description": "Revoke a certificate (not fully implemented yet)\nIn production, this should update metadata, generate CRL and implement OCSP",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Certificates"
+                ],
+                "summary": "Revoke certificate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Certificate ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "501": {
+                        "description": "Not Implemented",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "cert_id": {
+                                    "type": "string"
+                                },
+                                "message": {
+                                    "type": "string"
+                                },
+                                "todo": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/cert/server": {
+            "post": {
+                "description": "Generate an X.509 certificate for TLS servers (web servers, MQTT brokers, etc.)\nThe certificate will be signed by the configured CA",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Server Certificates"
+                ],
+                "summary": "Create server certificate",
+                "parameters": [
+                    {
+                        "description": "Server certificate configuration",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CertRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.CertResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/cert/server/{id}": {
+            "get": {
+                "description": "Retrieve an existing server certificate by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Server Certificates"
+                ],
+                "summary": "Get server certificate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Certificate ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "ca_certificate": {
+                                    "type": "string"
+                                },
+                                "certificate": {
+                                    "type": "string"
+                                },
+                                "id": {
+                                    "type": "string"
+                                },
+                                "private_key": {
+                                    "type": "string"
+                                },
+                                "type": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/certs": {
+            "get": {
+                "description": "Get a list of all generated certificates (server and client)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Certificates"
+                ],
+                "summary": "List certificates",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "certificates": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/definitions/storage.CertMetadata"
+                                    }
+                                },
+                                "total": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.CARequest": {
+            "type": "object",
+            "required": [
+                "common_name",
+                "country",
+                "organization"
+            ],
+            "properties": {
+                "common_name": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "key_size": {
+                    "type": "integer"
+                },
+                "organization": {
+                    "type": "string"
+                },
+                "valid_days": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.CAResponse": {
+            "type": "object",
+            "properties": {
+                "certificate": {
+                    "type": "string"
+                },
+                "common_name": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "not_after": {
+                    "type": "string"
+                },
+                "not_before": {
+                    "type": "string"
+                },
+                "private_key": {
+                    "type": "string"
+                },
+                "serial_number": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.CertRequest": {
+            "type": "object",
+            "required": [
+                "common_name",
+                "country",
+                "organization"
+            ],
+            "properties": {
+                "common_name": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "organization": {
+                    "type": "string"
+                },
+                "sans": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "valid_days": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.CertResponse": {
+            "type": "object",
+            "properties": {
+                "ca_certificate": {
+                    "type": "string"
+                },
+                "certificate": {
+                    "type": "string"
+                },
+                "common_name": {
+                    "type": "string"
+                },
+                "download_url": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "not_after": {
+                    "type": "string"
+                },
+                "not_before": {
+                    "type": "string"
+                },
+                "private_key": {
+                    "type": "string"
+                },
+                "serial_number": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "storage.CertMetadata": {
+            "type": "object",
+            "properties": {
+                "common_name": {
+                    "type": "string"
+                },
+                "expires_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "issued_at": {
+                    "type": "string"
+                },
+                "revoked": {
+                    "type": "boolean"
+                },
+                "serial_number": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
