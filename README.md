@@ -3,8 +3,8 @@ REST API per la generazione e gestione di certificati SSL/TLS autofirmati per am
 crittografia e autenticazione mTLS senza la necessità di una CA pubblica.
   
 __Nota Importante__: 
-Questa API genera certificati autofirmati destinati esclusivamente ad ambienti di sviluppo, test e QA. 
-NON utilizzare in produzione. Per ambienti produttivi, utilizzare certificati rilasciati da 
+Questa API genera certificati autofirmati destinati esclusivamente ad ambienti di sviluppo, test e QA.  
+NON utilizzare in produzione. Per ambienti produttivi, utilizzare certificati rilasciati da  
 Certificate Authority riconosciute (Let's Encrypt, DigiCert, ecc.).
 
 
