@@ -1,4 +1,4 @@
-## CERTFORGE API
+## CERTFORGE API (Versione Beta)
 REST API per la generazione e gestione di certificati SSL/TLS autofirmati per ambienti di sviluppo, QA, testing e scopi didattici. Ideale per configurare infrastrutture IoT di test, servizi MQTT, microservizi in staging e per apprendere i concetti di PKI,  
 crittografia e autenticazione mTLS senza la necessità di una CA pubblica.
   
@@ -142,23 +142,24 @@ I certificati vengono salvati nelle seguenti directory:
 ## Contribuire
 I contributi sono benvenuti!  
 
-Fai un fork del progetto
-Crea un branch per la tua feature (git checkout -b feature/AmazingFeature)
-Committa le modifiche (git commit -m 'Add some AmazingFeature')
-Pusha sul branch (git push origin feature/AmazingFeature)
-Apri una Pull Request
+Fai un fork del progetto  
+Crea un branch per la tua feature (git checkout -b feature/AmazingFeature)  
+Committa le modifiche (git commit -m 'Add some AmazingFeature')  
+Pusha sul branch (git push origin feature/AmazingFeature)  
+Apri una Pull Request  
 
-Licenza
-Questo progetto è distribuito sotto licenza MIT. Vedi il file LICENSE per maggiori dettagli.
-Autore: Aldo Forte
-Email: software@aldoforte.it
-
-Ringraziamenti
-Gin Web Framework
-Swaggo
-Go Crypto Package
+# icenza  
+Questo progetto è distribuito sotto licenza MIT. Vedi il file LICENSE per maggiori dettagli.  
+Autore: Aldo Forte  
+Email: software@aldoforte.it  
+  
+Ringraziamenti  
+Gin Web Framework  
+Swaggo  
+Go Crypto Package  
  
-Se questo progetto ti è stato utile per testing o apprendimento, considera di lasciare una stella!
+Se questo progetto ti è stato utile per testing o apprendimento, considera di lasciare una stella!  
+
 
 
 
