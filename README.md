@@ -148,13 +148,13 @@ Committa le modifiche (git commit -m 'Add some AmazingFeature')
 Pusha sul branch (git push origin feature/AmazingFeature)  
 Apri una Pull Request  
 
-# icenza  
+## Licenza  
 Questo progetto è distribuito sotto licenza MIT. Vedi il file LICENSE per maggiori dettagli.  
 Autore: Aldo Forte  
 Email: software@aldoforte.it  
   
-Ringraziamenti  
-Gin Web Framework  
+## Ringraziamenti  
+[Gin Web Framework](https://gin-gonic.com)  
 Swaggo  
 Go Crypto Package  
  
