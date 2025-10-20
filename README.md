@@ -1,7 +1,6 @@
 ## CERTFORGE API
-REST API per la generazione e gestione di certificati SSL/TLS autofirmati per ambienti di sviluppo, QA e testing.  
-Ideale per configurare infrastrutture IoT di test, servizi MQTT, microservizi in staging e qualsiasi scenario che richieda comunicazioni sicure 
-con autenticazione reciproca senza la necessità di una CA pubblica.
+REST API per la generazione e gestione di certificati SSL/TLS autofirmati per ambienti di sviluppo, QA, testing e scopi didattici. Ideale per configurare infrastrutture IoT di test, servizi MQTT, microservizi in staging e per apprendere i concetti di PKI,  
+crittografia e autenticazione mTLS senza la necessità di una CA pubblica.
   
 __Nota Importante__: 
 Questa API genera certificati autofirmati destinati esclusivamente ad ambienti di sviluppo, test e QA. 
@@ -10,15 +9,15 @@ Certificate Authority riconosciute (Let's Encrypt, DigiCert, ecc.).
 
 
 ## Caratteristiche
-Certificate Authority (CA) Autofirmata: Crea e gestisci la tua CA privata per ambienti di test
-Certificati Server: Genera certificati per server con supporto SAN (Subject Alternative Names)
-Certificati Client: Crea certificati per dispositivi IoT, applicazioni e client in ambiente di test
-mTLS Ready: Perfetto per implementare e testare autenticazione reciproca (mutual TLS)
-Storage Persistente: I certificati vengono salvati automaticamente sul filesystem
-Pacchetti Client: Download completo di certificato, chiave privata e CA in un unico pacchetto
-API RESTful: Interfaccia semplice e intuitiva
-Documentazione Swagger: API docs interattiva integrata
-Format Flessibili: Supporto per PEM, PKCS12 e altri formati
+Certificate Authority (CA) Autofirmata: Crea e gestisci la tua CA privata per ambienti di test  
+Certificati Server: Genera certificati per server con supporto SAN (Subject Alternative Names)  
+Certificati Client: Crea certificati per dispositivi IoT, applicazioni e client in ambiente di test  
+mTLS Ready: Perfetto per implementare e testare autenticazione reciproca (mutual TLS)  
+Storage Persistente: I certificati vengono salvati automaticamente sul filesystem  
+Pacchetti Client: Download completo di certificato, chiave privata e CA in un unico pacchetto  
+API RESTful: Interfaccia semplice e intuitiva  
+Documentazione Swagger: API docs interattiva integrata  
+Format Flessibili: Supporto per PEM, PKCS12 e altri formati  
 
 ## Quick Start
 ### Prerequisiti
@@ -76,9 +75,9 @@ curl -X GET http://localhost:8080/api/v1/cert/client/{cert-id}/package \
 
 ## Il pacchetto ZIP contiene:
 client-cert.pem - Certificato client  
-client-key.pem - Chiave privata client
-ca-cert.pem - Certificato CA per la verifica
-client.p12 - Bundle PKCS12 (opzionale)
+client-key.pem - Chiave privata client  
+ca-cert.pem - Certificato CA per la verifica  
+client.p12 - Bundle PKCS12 (opzionale)  
 
 
 
