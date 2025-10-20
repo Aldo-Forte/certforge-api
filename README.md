@@ -100,45 +100,45 @@ certforge-api/
 
 ## Casi d'uso
 Testing e Sviluppo
-IoT Device Testing: Genera certificati unici per ogni dispositivo IoT in ambiente di test
-MQTT Broker (Staging/QA): Configura broker MQTT con autenticazione mTLS per testing
-Microservizi (Dev/Staging): Test di comunicazione sicura tra microservizi
-API Gateway Testing: Test di autenticazione client basata su certificati
-Ambiente di Sviluppo Locale: SSL/TLS per sviluppo in locale senza warning del browser
-CI/CD Pipeline: Certificati per test automatizzati di connessioni sicure
-Proof of Concept: Validazione veloce di architetture mTLS
+IoT Device Testing: Genera certificati unici per ogni dispositivo IoT in ambiente di test  
+MQTT Broker (Staging/QA): Configura broker MQTT con autenticazione mTLS per testing  
+Microservizi (Dev/Staging): Test di comunicazione sicura tra microservizi   
+API Gateway Testing: Test di autenticazione client basata su certificati  
+Ambiente di Sviluppo Locale: SSL/TLS per sviluppo in locale senza warning del browser  
+CI/CD Pipeline: Certificati per test automatizzati di connessioni sicure  
+Proof of Concept: Validazione veloce di architetture mTLS  
 
-## Scopi Didattici e Formativi
-Corsi di Sicurezza Informatica: Strumento pratico per insegnare PKI e crittografia
-Workshop mTLS: Dimostrazioni pratiche di autenticazione reciproca
-Laboratori Universitari: Esercitazioni su certificati digitali e X.509
-Formazione Aziendale: Training su SSL/TLS per team di sviluppo
-Tutorial e Blog: Esempi concreti per articoli tecnici
-Apprendimento Self-Service: Sperimentare con certificati in ambiente sicuro
+## Scopi Didattici e Formativi  
+Corsi di Sicurezza Informatica: Strumento pratico per insegnare PKI e crittografia  
+Workshop mTLS: Dimostrazioni pratiche di autenticazione reciproca  
+Laboratori Universitari: Esercitazioni su certificati digitali e X.509  
+Formazione Aziendale: Training su SSL/TLS per team di sviluppo  
+Tutorial e Blog: Esempi concreti per articoli tecnici  
+Apprendimento Self-Service: Sperimentare con certificati in ambiente sicuro  
 
 ## Valore Didattico
-Questo progetto è particolarmente utile per:
-Comprendere la gerarchia dei certificati (CA → Server/Client)
-Visualizzare la struttura X.509 e i suoi campi
-Sperimentare con Subject Alternative Names (SANs)
-Implementare e testare mTLS (mutual TLS authentication)
-Capire il funzionamento di chiavi pubbliche/private
-Esplorare i formati dei certificati (PEM, DER, PKCS12)
-Simulare scenari reali di PKI enterprise
+Questo progetto è particolarmente utile per:  
+Comprendere la gerarchia dei certificati (CA → Server/Client)  
+Visualizzare la struttura X.509 e i suoi campi  
+Sperimentare con Subject Alternative Names (SANs)  
+Implementare e testare mTLS (mutual TLS authentication)  
+Capire il funzionamento di chiavi pubbliche/private  
+Esplorare i formati dei certificati (PEM, DER, PKCS12)  
+Simulare scenari reali di PKI enterprise  
 
 ## Sicurezza
-ATTENZIONE! Solo per ambienti non produttivi: I certificati sono autofirmati e non riconosciuti da CA pubbliche
-Le chiavi private della CA sono salvate su filesystem locale
-Supporto per chiavi RSA da 2048 a 4096 bit
-Certificati conformi agli standard X.509
-Best practice per la generazione di certificati di test
+ATTENZIONE! Solo per ambienti non produttivi: I certificati sono autofirmati e non riconosciuti da CA pubbliche  
+Le chiavi private della CA sono salvate su filesystem locale  
+Supporto per chiavi RSA da 2048 a 4096 bit  
+Certificati conformi agli standard X.509  
+Best practice per la generazione di certificati di test  
 
 ## Configurazione
-I certificati vengono salvati nelle seguenti directory:
-./certs/ - Certificato e chiave CA
-./output/server/ - Certificati server
-./output/client/ - Certificati client
-
+I certificati vengono salvati nelle seguenti directory:  
+./certs/ - Certificato e chiave CA  
+./output/server/ - Certificati server  
+./output/client/ - Certificati client  
+ 
 ## Contribuire
 I contributi sono benvenuti!  
 
