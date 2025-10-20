@@ -56,4 +56,31 @@ curl -X POST http://localhost:8080/api/v1/cert/server \
   }'
 ```
 
+## Genera un certificato client
+```
+curl -X POST http://localhost:8080/api/v1/cert/client \
+  -H "Content-Type: application/json" \
+  -d '{
+    "common_name": "device-001",
+    "organization": "My Company",
+    "country": "IT",
+    "valid_days": 365
+  }'
+```
+
+##  Scarica il pacchetto completo del client
+```
+curl -X GET http://localhost:8080/api/v1/cert/client/{cert-id}/package \
+  --output client-package.zip
+```
+
+## Il pacchetto ZIP contiene:
+client-cert.pem - Certificato client  
+client-key.pem - Chiave privata client
+ca-cert.pem - Certificato CA per la verifica
+client.p12 - Bundle PKCS12 (opzionale)
+
+
+
+
 
